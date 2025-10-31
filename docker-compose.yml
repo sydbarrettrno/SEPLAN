@@ -1,0 +1,182 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # PostgreSQL - Banco de Dados Principal
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: sistema_analitico_postgres
+    environment:
+      POSTGRES_USER: sistema_analitico
+      POSTGRES_PASSWORD: senha_segura_123
+      POSTGRES_DB: sistema_analitico
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sistema_analitico"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sistema_analitico_network
+
+  # ============================================================================
+  # Redis - Cache e Fila
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: sistema_analitico_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sistema_analitico_network
+
+  # ============================================================================
+  # Qdrant - Banco Vetorial para RAG
+  # ============================================================================
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: sistema_analitico_qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT_API_KEY: qdrant_api_key_123
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sistema_analitico_network
+
+  # ============================================================================
+  # Backend FastAPI
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: sistema_analitico_api
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql://sistema_analitico:senha_segura_123@postgres:5432/sistema_analitico
+      REDIS_URL: redis://redis:6379/0
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: qdrant_api_key_123
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      SECRET_KEY: sua_chave_secreta_aqui
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    volumes:
+      - ./api:/app/api
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sistema_analitico_network
+
+  # ============================================================================
+  # Frontend React
+  # ============================================================================
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.web
+    container_name: sistema_analitico_web
+    environment:
+      VITE_API_URL: http://localhost:8000
+      NODE_ENV: production
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./client:/app/client
+      - ./node_modules:/app/node_modules
+    networks:
+      - sistema_analitico_network
+
+  # ============================================================================
+  # n8n - Automação de Workflows
+  # ============================================================================
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: sistema_analitico_n8n
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: admin123
+      N8N_HOST: 0.0.0.0
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      DATABASE_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n_user
+      DB_POSTGRESDB_PASSWORD: n8n_password
+    ports:
+      - "5678:5678"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - sistema_analitico_network
+
+  # ============================================================================
+  # Nginx - Reverse Proxy
+  # ============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: sistema_analitico_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/docker/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+      - web
+    networks:
+      - sistema_analitico_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local
+  n8n_data:
+    driver: local
+
+networks:
+  sistema_analitico_network:
+    driver: bridge
