@@ -1,0 +1,74 @@
+2025-10-31 00:44:14,037 [INFO] uvicorn.error: Will watch for changes in these directories: ['C:\\SEPLAN']
+2025-10-31 00:44:14,037 [INFO] uvicorn.error: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-10-31 00:44:14,038 [INFO] uvicorn.error: Started reloader process [30168] using WatchFiles
+2025-10-31 00:44:45,414 [INFO] uvicorn.error: Stopping reloader process [30168]
+2025-10-31 00:45:50,087 [INFO] uvicorn.error: Will watch for changes in these directories: ['C:\\SEPLAN']
+2025-10-31 00:45:50,088 [INFO] uvicorn.error: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-10-31 00:45:50,088 [INFO] uvicorn.error: Started reloader process [30692] using WatchFiles
+2025-10-31 00:45:51,175 [INFO] uvicorn.error: Started server process [17520]
+2025-10-31 00:45:51,176 [INFO] uvicorn.error: Waiting for application startup.
+2025-10-31 00:45:51,179 [INFO] uvicorn.error: Application startup complete.
+2025-10-31 00:45:53,518 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:45:55,991 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:45:58,712 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:01,340 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:03,663 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:06,291 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:08,669 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:11,138 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:13,862 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:16,991 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:19,911 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:22,789 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:26,113 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:28,986 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:31,804 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:34,786 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:37,366 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:39,784 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:42,260 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:44,729 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:47,149 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:49,627 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:51,994 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:54,518 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:56,991 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:46:59,466 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:02,200 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:04,723 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:07,250 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:09,827 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:12,397 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:14,868 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:17,850 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:20,582 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:23,359 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:25,928 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:28,559 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:31,531 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:34,360 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:37,191 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:39,859 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:42,533 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:45,366 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:48,234 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:50,962 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:53,744 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:56,365 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:47:58,891 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:01,529 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:04,399 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:06,865 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:09,280 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:11,754 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:14,582 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:17,248 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:48:19,879 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:49:50,239 [INFO] watchfiles.main: 3 changes detected
+2025-10-31 00:57:07,030 [INFO] watchfiles.main: 34 changes detected
+2025-10-31 00:57:07,997 [INFO] watchfiles.main: 1 change detected
+2025-10-31 00:57:29,546 [INFO] uvicorn.error: Shutting down
+2025-10-31 00:57:29,654 [INFO] uvicorn.error: Waiting for application shutdown.
+2025-10-31 00:57:29,654 [INFO] uvicorn.error: Application shutdown complete.
+2025-10-31 00:57:29,654 [INFO] uvicorn.error: Finished server process [17520]
+2025-10-31 00:57:29,805 [INFO] uvicorn.error: Stopping reloader process [30692]

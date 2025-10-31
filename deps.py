@@ -1,0 +1,22 @@
+﻿from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlmodel import Session
+
+from security import decode_token, get_user_by_email
+from database import get_session
+
+auth_scheme = HTTPBearer(auto_error=False)
+
+def get_current_user(
+    creds: HTTPAuthorizationCredentials = Depends(auth_scheme),
+    session: Session = Depends(get_session)
+):
+    if not creds or creds.scheme.lower() != "bearer":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token ausente")
+    email = decode_token(creds.credentials)
+    if not email:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invÃ¡lido")
+    user = get_user_by_email(session, email)
+    if not user or not user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="UsuÃ¡rio invÃ¡lido/inativo")
+    return user

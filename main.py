@@ -1,0 +1,49 @@
+﻿from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlmodel import Session
+
+from settings import get_settings
+from database import init_db, get_session
+from deps import get_current_user
+from schemas import AnalyzeRequest
+from routers_auth import router as auth_router
+
+settings = get_settings()
+app = FastAPI(title="SEPLAN MVP API", version="0.1.0")
+
+origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True
+)
+
+@app.on_event("startup")
+def startup():
+    init_db()
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+@app.get("/me")
+def me(user=Depends(get_current_user)):
+    return {"email": user.email, "name": user.name, "is_admin": user.is_admin}
+
+@app.post("/analyze")
+def analyze(payload: AnalyzeRequest, user=Depends(get_current_user), session: Session = Depends(get_session)):
+    # Placeholder determinÃ­stico simples (sem LLM) para demonstrar funcionamento
+    text = payload.text.strip()
+    score = min(100, max(0, len(text)))
+    result = {
+        "user": {"email": user.email},
+        "summary": f"AnÃ¡lise sintÃ©tica do texto recebido (len={len(text)}).",
+        "kpis": {"ComplexidadeAprox": score, "NeuroIndexL10": 8},
+        "status": "ok"
+    }
+    return JSONResponse(result)
+
+app.include_router(auth_router)
