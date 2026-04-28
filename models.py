@@ -62,5 +62,6 @@ class AttendanceMessage(SQLModel, table=True):
     response_text: Optional[str] = None
     confidence_score: Optional[float] = None
     source_protocols: Optional[str] = None
+    needs_human_review: bool = Field(default=True, index=True)
 
     created_at: datetime = Field(default_factory=datetime.utcnow)

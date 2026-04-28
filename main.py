@@ -7,10 +7,12 @@ from settings import get_settings
 from database import init_db, get_session
 from deps import get_current_user
 from schemas import AnalyzeRequest
+from routers_agent import router as agent_router
 from routers_auth import router as auth_router
+from routers_protocolos import router as protocolos_router
 
 settings = get_settings()
-app = FastAPI(title="SEPLAN MVP API", version="0.1.0")
+app = FastAPI(title="Agente WhatsApp SEPLAN API", version="0.1.0")
 
 origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
@@ -47,3 +49,5 @@ def analyze(payload: AnalyzeRequest, user=Depends(get_current_user), session: Se
     return JSONResponse(result)
 
 app.include_router(auth_router)
+app.include_router(agent_router)
+app.include_router(protocolos_router)
