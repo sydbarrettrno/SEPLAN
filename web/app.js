@@ -4,6 +4,14 @@ const sendButton = document.querySelector("#send-button");
 const conversation = document.querySelector("#conversation");
 const clearButton = document.querySelector("#clear-chat");
 
+const MIN_ANALYSIS_MS = 7000;
+const ANALYSIS_STEPS = [
+  [0, "Vou consultar o sistema da SEPLAN e retorno em instantes."],
+  [1700, "Consultando legislação, critérios técnicos e registros da SEPLAN..."],
+  [3900, "Cruzando a pergunta com padrões de atendimento e registros anteriores..."],
+  [5700, "Consolidando uma orientação segura para atendimento..."],
+];
+
 const fields = {
   apiStatus: document.querySelector("#api-status"),
   kbStatus: document.querySelector("#kb-status"),
@@ -19,19 +27,19 @@ const fields = {
 };
 
 const sourceLabels = {
-  qa: "Perguntas e respostas curadas",
-  corrected: "Resposta corrigida pela SEPLAN",
-  checklist: "Checklist técnico-operacional",
-  historical: "Histórico e últimos trâmites",
+  qa: "Orientações curadas da SEPLAN",
+  corrected: "Orientação corrigida pela SEPLAN",
+  checklist: "Critérios técnicos da SEPLAN",
+  historical: "Registros e atendimentos anteriores",
   normative: "Base normativa",
-  fallback: "Encaminhamento SEPLAN",
+  fallback: "Encaminhamento seguro",
 };
 
 const answerTypeLabels = {
   qa: "Orientação administrativa",
   corrected: "Orientação corrigida",
   checklist: "Conferência documental",
-  historical: "Triagem por padrão histórico",
+  historical: "Triagem por padrão de atendimento",
   normative: "Orientação normativa",
   fallback: "Encaminhamento seguro",
 };
@@ -48,8 +56,17 @@ function addMessage(role, text) {
   const node = document.createElement("article");
   node.className = `message ${role}`;
   const label = role === "user" ? "Cidadão" : "SEPLAN IA";
-  node.innerHTML = `<small>${label}</small>${escapeHtml(text)}`;
+  node.innerHTML = `<small>${label}</small><span class="message-text">${escapeHtml(text)}</span>`;
   conversation.appendChild(node);
+  conversation.scrollTop = conversation.scrollHeight;
+  return node;
+}
+
+function updateMessage(node, text) {
+  const textElement = node.querySelector(".message-text");
+  if (textElement) {
+    textElement.innerHTML = escapeHtml(text);
+  }
   conversation.scrollTop = conversation.scrollHeight;
 }
 
@@ -60,6 +77,27 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runAnalysisSteps(messageNode) {
+  let elapsed = 0;
+  for (const [delay, text] of ANALYSIS_STEPS) {
+    const wait = Math.max(0, delay - elapsed);
+    if (wait > 0) {
+      await sleep(wait);
+    }
+    updateMessage(messageNode, text);
+    elapsed = delay;
+  }
+
+  const remaining = Math.max(0, MIN_ANALYSIS_MS - elapsed);
+  if (remaining > 0) {
+    await sleep(remaining);
+  }
 }
 
 function setList(element, values) {
@@ -98,27 +136,30 @@ async function sendMessage(message) {
   sendButton.disabled = true;
   sendButton.textContent = "Analisando";
   addMessage("user", message);
+  const analysisMessage = addMessage("agent", ANALYSIS_STEPS[0][1]);
 
-  try {
-    const response = await fetch("/agent/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        channel: "whatsapp",
-        phone_number: "+5547999999999",
-        message,
-      }),
-    });
-
+  const requestPromise = fetch("/agent/message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      channel: "whatsapp",
+      phone_number: "+5547999999999",
+      message,
+    }),
+  }).then(async (response) => {
     if (!response.ok) {
       throw new Error(`Erro HTTP ${response.status}`);
     }
+    return response.json();
+  });
 
-    const data = await response.json();
-    addMessage("agent", data.response_text);
+  try {
+    const [data] = await Promise.all([requestPromise, runAnalysisSteps(analysisMessage)]);
+    updateMessage(analysisMessage, data.response_text);
     updateInspector(data);
   } catch (error) {
-    addMessage("agent", "Não consegui consultar o backend agora. Verifique se a API está rodando.");
+    await runAnalysisSteps(analysisMessage);
+    updateMessage(analysisMessage, "Não consegui consultar o sistema agora. Verifique se a API está rodando.");
     fields.apiStatus.textContent = "erro";
     fields.apiStatus.className = "bad";
   } finally {
@@ -176,7 +217,7 @@ clearButton.addEventListener("click", () => {
   conversation.innerHTML = `
     <div class="empty-state">
       <strong>Digite uma dúvida de atendimento da SEPLAN.</strong>
-      <span>O sistema faz triagem técnica com base normativa, checklists, histórico e respostas corrigidas.</span>
+      <span>O sistema faz triagem técnica com base normativa, critérios técnicos, registros de atendimento e respostas corrigidas.</span>
     </div>
   `;
   updateInspector({
