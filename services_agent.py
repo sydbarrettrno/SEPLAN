@@ -1,6 +1,6 @@
 import json
 import unicodedata
-from typing import List
+from typing import List, Optional
 
 from sqlmodel import Session
 
@@ -10,11 +10,35 @@ from services_knowledge_base import search_knowledge_base, select_best_pattern
 
 
 PRODUCT_NAME = "Agente WhatsApp SEPLAN"
+SEPLAN_CONTACT = {
+    "whatsapp": "(47) 98841-6225",
+    "phone": "(47) 3443-8826",
+    "email": "atendimento.seplan@itapoa.sc.gov.br",
+    "hours": "07h30 às 13h30",
+}
 CONTACT_INSTRUCTION = "Em caso de dúvida, entre em contato com a SEPLAN."
 FALLBACK_RESPONSE = (
-    "Não encontrei base suficiente para responder com segurança. "
-    "Em caso de dúvida, entre em contato com a SEPLAN."
+    "Não encontrei base suficiente para responder com segurança.\n\n"
+    "Para evitar orientação errada, confirme com a SEPLAN:\n"
+    f"WhatsApp: {SEPLAN_CONTACT['whatsapp']}\n"
+    f"Telefone: {SEPLAN_CONTACT['phone']}\n"
+    f"E-mail: {SEPLAN_CONTACT['email']}\n"
+    f"Atendimento: {SEPLAN_CONTACT['hours']}.\n\n"
+    "Se possível, envie também: descrição do pedido, endereço, balneário, "
+    "quadra, lote e fotos quando houver."
 )
+
+
+CONTACT_INTENTS = {
+    "DECLARACAO_NAO_OPOSICAO",
+    "DECLARACAO_NAO_OPOSICAO_AGUA",
+    "DECLARACAO_NAO_OPOSICAO_LUZ",
+    "GUIA_REBAIXADA",
+    "DRENAGEM",
+    "DENUNCIA",
+    "DENUNCIA_OBRA_IRREGULAR",
+    "DESCONHECIDA",
+}
 
 
 def handle_agent_message(session: Session, payload: AgentMessageRequest) -> AgentMessageResponse:
@@ -38,9 +62,15 @@ def handle_agent_message(session: Session, payload: AgentMessageRequest) -> Agen
             response_text = remove_individual_protocol_language(response_text)
         answer_source = str(best_pattern.get("_source_type") or "knowledge_base")
         fallback_contact = False
-        contact_instruction = None
         knowledge_base_used = True
         needs_human_review = confidence_score < 0.7
+        include_contact = should_include_contact(detected_intent, confidence_score, needs_human_review)
+        response_text = professionalize_response_text(
+            response_text=response_text,
+            detected_intent=detected_intent,
+            include_contact=include_contact,
+        )
+        contact_instruction = build_contact_block() if include_contact else None
     else:
         detected_intent = "DESCONHECIDA"
         response_text = FALLBACK_RESPONSE
@@ -51,7 +81,7 @@ def handle_agent_message(session: Session, payload: AgentMessageRequest) -> Agen
         source_normative = []
         answer_source = "fallback"
         fallback_contact = True
-        contact_instruction = CONTACT_INSTRUCTION
+        contact_instruction = build_contact_block()
         knowledge_base_used = False
         needs_human_review = True
 
@@ -148,6 +178,89 @@ def build_response_text(pattern: dict) -> str:
         return FALLBACK_RESPONSE
 
     return text
+
+
+def should_include_contact(detected_intent: str, confidence_score: float, needs_human_review: bool) -> bool:
+    normalized_intent = str(detected_intent or "").upper()
+    return (
+        needs_human_review
+        or confidence_score < 0.75
+        or normalized_intent in CONTACT_INTENTS
+    )
+
+
+def professionalize_response_text(
+    response_text: str,
+    detected_intent: str,
+    include_contact: bool,
+) -> str:
+    parts = [response_text.strip()]
+    info_hint = build_required_info_hint(detected_intent)
+    if info_hint and info_hint not in response_text:
+        parts.append(info_hint)
+
+    if include_contact:
+        contact_block = build_contact_block()
+        if contact_block not in response_text:
+            parts.append(contact_block)
+
+    return "\n\n".join(part for part in parts if part)
+
+
+def build_contact_block() -> str:
+    return (
+        "Fale com a SEPLAN:\n"
+        f"WhatsApp: {SEPLAN_CONTACT['whatsapp']}\n"
+        f"Telefone: {SEPLAN_CONTACT['phone']}\n"
+        f"E-mail: {SEPLAN_CONTACT['email']}\n"
+        f"Atendimento: {SEPLAN_CONTACT['hours']}."
+    )
+
+
+def build_required_info_hint(intent: Optional[str]) -> str:
+    normalized_intent = str(intent or "").upper()
+    hints = {
+        "HABITE_SE": (
+            "Para agilizar, informe o número do atendimento, se já existir, e os dados do imóvel: "
+            "alvará de construção, balneário, quadra, lote e cadastro ou inscrição imobiliária."
+        ),
+        "ALVARA_CONSTRUCAO": (
+            "Para agilizar, tenha em mãos os dados do imóvel: balneário, quadra, lote, "
+            "cadastro ou inscrição imobiliária, tipo de obra e documentos do imóvel."
+        ),
+        "ALVARA_ATENDIMENTO": (
+            "Para agilizar, tenha em mãos os dados do imóvel: balneário, quadra, lote, "
+            "cadastro ou inscrição imobiliária, tipo de obra e documentos do imóvel."
+        ),
+        "DECLARACAO_NAO_OPOSICAO": (
+            "Para análise, informe balneário, quadra, lote, cadastro ou inscrição imobiliária "
+            "e tenha a comprovação de vínculo ou dominialidade do imóvel."
+        ),
+        "DECLARACAO_NAO_OPOSICAO_AGUA": (
+            "Para análise, informe balneário, quadra, lote, cadastro ou inscrição imobiliária "
+            "e tenha a comprovação de vínculo ou dominialidade do imóvel."
+        ),
+        "DECLARACAO_NAO_OPOSICAO_LUZ": (
+            "Para análise, informe balneário, quadra, lote, cadastro ou inscrição imobiliária "
+            "e tenha a comprovação de vínculo ou dominialidade do imóvel."
+        ),
+        "GUIA_REBAIXADA": (
+            "Para análise, informe o endereço, a finalidade do acesso, fotos do local e os dados do imóvel."
+        ),
+        "DRENAGEM": (
+            "Para análise, descreva o problema, informe o endereço, ponto de referência e envie fotos ou vídeos quando houver."
+        ),
+        "DENUNCIA": (
+            "Para análise, informe o endereço, descreva o ocorrido e envie fotos quando houver."
+        ),
+        "DENUNCIA_OBRA_IRREGULAR": (
+            "Para análise, informe o endereço, descreva o ocorrido e envie fotos quando houver."
+        ),
+        "DESCONHECIDA": (
+            "Se possível, envie também: descrição do pedido, endereço, balneário, quadra, lote e fotos quando houver."
+        ),
+    }
+    return hints.get(normalized_intent, "")
 
 
 def remove_individual_protocol_language(text: str) -> str:
