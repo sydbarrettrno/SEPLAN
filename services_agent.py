@@ -16,7 +16,6 @@ SEPLAN_CONTACT = {
     "email": "atendimento.seplan@itapoa.sc.gov.br",
     "hours": "07h30 às 13h30",
 }
-CONTACT_INSTRUCTION = "Em caso de dúvida, entre em contato com a SEPLAN."
 FALLBACK_RESPONSE = (
     "Não encontrei base suficiente para responder com segurança.\n\n"
     "Para evitar orientação errada, confirme com a SEPLAN:\n"
@@ -49,7 +48,7 @@ def handle_agent_message(session: Session, payload: AgentMessageRequest) -> Agen
     if best_pattern:
         detected_intent = str(best_pattern.get("_intent") or best_pattern.get("intent") or "DESCONHECIDA")
         supporting_patterns = filter_supporting_patterns(best_pattern, ranked_patterns)
-        response_text = build_response_text(best_pattern)
+        response_text = sanitize_public_response(build_response_text(best_pattern))
         confidence_score = round(
             float(best_pattern.get("_confidence") or best_pattern.get("_score") or 0.0),
             2,
@@ -65,10 +64,12 @@ def handle_agent_message(session: Session, payload: AgentMessageRequest) -> Agen
         knowledge_base_used = True
         needs_human_review = confidence_score < 0.7
         include_contact = should_include_contact(detected_intent, confidence_score, needs_human_review)
-        response_text = professionalize_response_text(
-            response_text=response_text,
-            detected_intent=detected_intent,
-            include_contact=include_contact,
+        response_text = sanitize_public_response(
+            professionalize_response_text(
+                response_text=response_text,
+                detected_intent=detected_intent,
+                include_contact=include_contact,
+            )
         )
         contact_instruction = build_contact_block() if include_contact else None
     else:
@@ -178,6 +179,34 @@ def build_response_text(pattern: dict) -> str:
         return FALLBACK_RESPONSE
 
     return text
+
+
+def sanitize_public_response(text: str) -> str:
+    """Remove termos de bastidor antes de mostrar a resposta ao cidadão."""
+    replacements = {
+        "dentro do prazo indicado no checklist da SEPLAN": "atualizado para análise da SEPLAN",
+        "dentro do prazo indicado no checklist": "atualizado para análise",
+        "conforme checklist da SEPLAN": "para análise da SEPLAN",
+        "segundo o checklist da SEPLAN": "para análise da SEPLAN",
+        "no checklist da SEPLAN": "na análise da SEPLAN",
+        "checklist da SEPLAN": "análise da SEPLAN",
+        "checklist interno": "análise técnica",
+        "checklists internos": "critérios técnicos",
+        "checklists técnicos": "critérios técnicos",
+        "checklist": "análise técnica",
+        "base histórica": "registros da SEPLAN",
+        "base inteligente": "sistema da SEPLAN",
+        "fonte operacional": "orientação interna",
+        "padrões históricos": "registros anteriores da SEPLAN",
+        "últimos trâmites": "registros anteriores",
+        "ultimos tramites": "registros anteriores",
+    }
+    clean_text = text
+    for old, new in replacements.items():
+        clean_text = clean_text.replace(old, new)
+        clean_text = clean_text.replace(old.capitalize(), new.capitalize())
+        clean_text = clean_text.replace(old.upper(), new.upper())
+    return clean_text
 
 
 def should_include_contact(detected_intent: str, confidence_score: float, needs_human_review: bool) -> bool:
