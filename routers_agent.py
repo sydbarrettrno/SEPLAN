@@ -16,7 +16,7 @@ def agent_health():
         "status": "ok",
         "module": "agent",
         "product": PRODUCT_NAME,
-        "version": "v02",
+        "version": "v03",
     }
 
 

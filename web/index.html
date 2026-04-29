@@ -3,19 +3,43 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agente WhatsApp SEPLAN</title>
+    <title>SEPLAN IA — Apoio Técnico ao Atendimento</title>
     <link rel="stylesheet" href="/app/styles.css" />
   </head>
   <body>
     <div class="shell">
-      <aside class="sidebar" aria-label="Consultas sugeridas">
+      <aside class="sidebar" aria-label="Navegação e consultas sugeridas">
         <div class="brand">
-          <div class="brand-mark">S</div>
+          <div class="brand-mark">IA</div>
           <div>
-            <h1>Agente SEPLAN</h1>
-            <p>Atendimento assistido</p>
+            <h1>SEPLAN IA</h1>
+            <p>Apoio técnico ao atendimento</p>
           </div>
         </div>
+
+        <section class="panel intro-panel">
+          <p class="eyebrow">Ferramenta institucional</p>
+          <h2>Triagem técnica orientativa</h2>
+          <p>
+            Este não é um bot genérico. É uma camada de apoio técnico para triagem de dúvidas da SEPLAN.
+          </p>
+          <p>
+            O sistema cruza legislação municipal, checklists técnicos, base histórica de protocolos e respostas já praticadas pela secretaria.
+          </p>
+          <p class="notice">
+            A resposta é orientativa. Casos específicos continuam sujeitos à conferência da equipe técnica da SEPLAN.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Bases consultadas</h2>
+          <ul class="compact-list">
+            <li>Legislação municipal</li>
+            <li>Checklists técnicos da SEPLAN</li>
+            <li>Histórico de protocolos</li>
+            <li>Últimos trâmites e respostas praticadas</li>
+          </ul>
+        </section>
 
         <section class="panel">
           <h2>Status</h2>
@@ -32,12 +56,20 @@
         </section>
 
         <section class="panel">
-          <h2>Testar assunto</h2>
+          <h2>Testar triagem</h2>
           <button class="prompt-button" data-message="quais documentos para alvará de construção">Alvará de construção</button>
           <button class="prompt-button" data-message="matrícula do imóvel precisa estar atualizada?">Matrícula atualizada</button>
           <button class="prompt-button" data-message="quero saber como pedir habite-se">Habite-se</button>
           <button class="prompt-button" data-message="preciso de declaração de não oposição para água ou luz">DNO água/luz</button>
           <button class="prompt-button" data-message="quero pedir guia rebaixada e drenagem">Guia rebaixada</button>
+        </section>
+
+        <section class="panel contact-card">
+          <h2>Contato SEPLAN</h2>
+          <p><strong>WhatsApp:</strong> (47) 9 8841-6225</p>
+          <p><strong>Telefone:</strong> (47) 3443-8826</p>
+          <p><strong>E-mail:</strong> atendimento.seplan@itapoa.sc.gov.br</p>
+          <p><strong>Atendimento:</strong> 07h30 às 13h30</p>
         </section>
 
         <a class="docs-link" href="/docs">Abrir documentação da API</a>
@@ -46,36 +78,43 @@
       <main class="workspace">
         <header class="toolbar">
           <div>
-            <p class="eyebrow">Simulador local</p>
-            <h2>Conversa do cidadão</h2>
+            <p class="eyebrow">Simulador interno</p>
+            <h2>Análise orientativa da dúvida do cidadão</h2>
+            <p class="toolbar-subtitle">
+              A saída mostra orientação, base usada, confiança, rastreabilidade e necessidade de análise humana.
+            </p>
           </div>
           <button id="clear-chat" class="secondary-button" type="button">Limpar</button>
         </header>
 
         <section id="conversation" class="conversation" aria-live="polite">
           <div class="empty-state">
-            <strong>Digite uma pergunta da SEPLAN.</strong>
-            <span>O agente responde usando base normativa, checklists, histórico e respostas corrigidas.</span>
+            <strong>Digite uma dúvida de atendimento da SEPLAN.</strong>
+            <span>O sistema faz triagem técnica com base normativa, checklists, histórico e respostas corrigidas.</span>
           </div>
         </section>
 
         <form id="message-form" class="composer">
           <label class="sr-only" for="message-input">Mensagem do cidadão</label>
           <textarea id="message-input" rows="3" placeholder="Ex.: preciso de declaração de não oposição para água ou luz"></textarea>
-          <button id="send-button" type="submit">Enviar</button>
+          <button id="send-button" type="submit">Analisar</button>
         </form>
       </main>
 
-      <aside class="inspector" aria-label="Fontes da resposta">
+      <aside class="inspector" aria-label="Leitura técnica da resposta">
         <section class="panel">
-          <h2>Leitura do agente</h2>
+          <h2>Leitura técnica</h2>
           <dl class="result-grid">
             <div>
               <dt>Intenção</dt>
               <dd id="intent-value">-</dd>
             </div>
             <div>
-              <dt>Fonte principal</dt>
+              <dt>Tipo de resposta</dt>
+              <dd id="answer-type-value">-</dd>
+            </div>
+            <div>
+              <dt>Base consultada</dt>
               <dd id="source-value">-</dd>
             </div>
             <div>
@@ -86,13 +125,17 @@
               <dt>Revisão humana</dt>
               <dd id="review-value">-</dd>
             </div>
+            <div>
+              <dt>Contato indicado</dt>
+              <dd id="contact-value">-</dd>
+            </div>
           </dl>
         </section>
 
         <section class="panel sources-panel">
-          <h2>Fontes</h2>
+          <h2>Rastreabilidade</h2>
           <div class="source-block">
-            <h3>Checklists</h3>
+            <h3>Checklists técnicos</h3>
             <ul id="checklist-sources"></ul>
           </div>
           <div class="source-block">
@@ -100,7 +143,7 @@
             <ul id="normative-sources"></ul>
           </div>
           <div class="source-block">
-            <h3>Protocolos</h3>
+            <h3>Histórico/protocolos</h3>
             <ul id="protocol-sources"></ul>
           </div>
         </section>
