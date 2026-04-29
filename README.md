@@ -1,12 +1,28 @@
 # Agente WhatsApp SEPLAN
 
-Backend FastAPI para simular um atendimento inicial via WhatsApp da SEPLAN/Prefeitura de Itapoa.
+Backend FastAPI para simular atendimento inicial via WhatsApp da SEPLAN/Prefeitura de Itapoá.
 
-A V02 recebe mensagens, identifica a intencao, consulta a Base Inteligente de Atendimento SEPLAN e devolve uma resposta curta, segura e rastreavel. Esta versao nao integra WhatsApp real, nao usa LLM, nao usa embeddings e nao chama APIs externas.
+A versão atual recebe mensagens, identifica a intenção, consulta as bases inteligentes em `data/base_inteligente/` e devolve uma resposta curta, segura, rastreável e mais útil para atendimento público. Esta versão ainda não integra WhatsApp real, não usa LLM, não usa embeddings e não chama APIs externas.
 
-## Plano tecnico
+## V03 — Atendimento profissional SEPLAN
 
-O plano da V01 esta em [`docs/PLANO_AGENT_WHATSAPP_V01.md`](docs/PLANO_AGENT_WHATSAPP_V01.md).
+A V03 melhora a qualidade da resposta do agente. Quando a base não sustenta uma resposta segura, ou quando o atendimento precisa de confirmação, o agente informa **como** falar com a SEPLAN e quais dados ajudam na análise.
+
+Contatos usados pelo agente:
+
+- WhatsApp: (47) 98841-6225
+- Telefone: (47) 3443-8826
+- E-mail: atendimento.seplan@itapoa.sc.gov.br
+- Atendimento: 07h30 às 13h30
+
+O agente também orienta dados úteis conforme a intenção, sem inventar exigências:
+
+- Habite-se: número do atendimento, alvará de construção, balneário, quadra, lote e cadastro/inscrição imobiliária.
+- Alvará de construção: balneário, quadra, lote, cadastro/inscrição imobiliária, tipo de obra e documentos do imóvel.
+- Declaração de Não Oposição: balneário, quadra, lote, cadastro/inscrição imobiliária e comprovação de vínculo/dominialidade.
+- Guia rebaixada: endereço, finalidade do acesso, fotos do local e dados do imóvel.
+- Drenagem: endereço, descrição do problema, ponto de referência e fotos/vídeos quando houver.
+- Denúncia de obra irregular: endereço, descrição do ocorrido e fotos quando houver.
 
 ## V02 — Integração das Bases Inteligentes
 
@@ -20,8 +36,6 @@ O endpoint `/agent/message` consulta as bases em `data/base_inteligente/` antes 
 
 O agente usa a base histórica para padrões e rastreabilidade, mas não responde como consulta individual de protocolo. Protocolos fonte aparecem apenas em `source_protocols`.
 
-Se a base não tiver confiança suficiente, o agente responde com fallback orientando contato com a SEPLAN.
-
 ## Rodar localmente
 
 ```bash
@@ -34,14 +48,14 @@ python -m uvicorn main:app --reload
 
 Edite o `SECRET_KEY` no `.env` antes de usar fora de ambiente local.
 
-Links uteis:
+Links úteis:
 
 - API: http://127.0.0.1:8000
 - Interface do agente: http://127.0.0.1:8000/app/
 - Docs: http://127.0.0.1:8000/docs
 - Health geral: http://127.0.0.1:8000/health
 - Health do agente: http://127.0.0.1:8000/agent/health
-- Health da memoria de protocolos: http://127.0.0.1:8000/protocolos/health
+- Health da memória de protocolos: http://127.0.0.1:8000/protocolos/health
 
 ## Agente WhatsApp
 
@@ -58,7 +72,7 @@ Resposta:
   "status": "ok",
   "module": "agent",
   "product": "Agente WhatsApp SEPLAN",
-  "version": "v01"
+  "version": "v02"
 }
 ```
 
@@ -75,14 +89,14 @@ Content-Type: application/json
 }
 ```
 
-Resposta:
+Resposta com base inteligente:
 
 ```json
 {
   "channel": "whatsapp",
   "phone_number": "+5547999999999",
   "detected_intent": "HABITE_SE",
-  "response_text": "Resposta curta baseada na base inteligente...",
+  "response_text": "Resposta curta baseada na base inteligente, com orientação prática quando aplicável...",
   "confidence_score": 0.95,
   "source_patterns": ["Habite-se", "Como solicitar Habite-se?"],
   "source_protocols": ["30690/2025", "30604/2025"],
@@ -96,12 +110,12 @@ Resposta:
 }
 ```
 
-Fallback quando nao houver base suficiente:
+Fallback profissional quando não houver base suficiente:
 
 ```json
 {
   "detected_intent": "DESCONHECIDA",
-  "response_text": "Não encontrei base suficiente para responder com segurança. Em caso de dúvida, entre em contato com a SEPLAN.",
+  "response_text": "Não encontrei base suficiente para responder com segurança.\n\nPara evitar orientação errada, confirme com a SEPLAN:\nWhatsApp: (47) 98841-6225\nTelefone: (47) 3443-8826\nE-mail: atendimento.seplan@itapoa.sc.gov.br\nAtendimento: 07h30 às 13h30.\n\nSe possível, envie também: descrição do pedido, endereço, balneário, quadra, lote e fotos quando houver.",
   "confidence_score": 0.2,
   "source_patterns": [],
   "source_protocols": [],
@@ -110,12 +124,12 @@ Fallback quando nao houver base suficiente:
   "answer_source": "fallback",
   "needs_human_review": true,
   "fallback_contact": true,
-  "contact_instruction": "Em caso de dúvida, entre em contato com a SEPLAN.",
+  "contact_instruction": "Fale com a SEPLAN:\nWhatsApp: (47) 98841-6225\nTelefone: (47) 3443-8826\nE-mail: atendimento.seplan@itapoa.sc.gov.br\nAtendimento: 07h30 às 13h30.",
   "knowledge_base_used": false
 }
 ```
 
-Todo atendimento recebido em `/agent/message` e registrado no banco.
+Todo atendimento recebido em `/agent/message` é registrado no banco.
 
 ### Interface web
 
@@ -125,11 +139,11 @@ Com a API rodando, acesse:
 http://127.0.0.1:8000/app/
 ```
 
-A tela permite conversar com o agente, testar assuntos prontos e visualizar a intencao detectada, fonte principal, confianca, checklists, normas e protocolos usados apenas como rastreabilidade.
+A tela permite conversar com o agente, testar assuntos prontos e visualizar intenção detectada, fonte principal, confiança, checklists, normas e protocolos usados apenas como rastreabilidade.
 
-## Memoria interna de protocolos
+## Memória interna de protocolos
 
-O modulo `/protocolos` e uma ferramenta interna do agente para importar e consultar registros normalizados. Ele continua disponivel para carga, auditoria e testes da base.
+O módulo `/protocolos` é uma ferramenta interna do agente para importar e consultar registros normalizados. Ele continua disponível para carga, auditoria e testes da base.
 
 ### Buscar protocolos
 
@@ -143,17 +157,7 @@ Content-Type: application/json
 }
 ```
 
-Resposta:
-
-```json
-{
-  "query": "texto livre",
-  "count": 0,
-  "results": []
-}
-```
-
-### Consultar protocolo por numero
+### Consultar protocolo por número
 
 ```http
 GET /protocolos/12345
@@ -163,13 +167,13 @@ Retorna o registro encontrado ou `404` com JSON claro.
 
 ## Importar protocolos
 
-O importador aceita CSV ou XLSX normalizado. Campos ausentes sao tratados como vazios quando possivel.
+O importador aceita CSV ou XLSX normalizado. Campos ausentes são tratados como vazios quando possível.
 
 ```bash
 python scripts/import_protocolos.py caminho\para\protocolos.csv
 ```
 
-Tambem e possivel informar outro banco:
+Também é possível informar outro banco:
 
 ```bash
 python scripts/import_protocolos.py caminho\para\protocolos.xlsx --database-url sqlite:///./app.db
@@ -190,7 +194,7 @@ copy .env.example .env
 docker compose up --build -d
 ```
 
-## Fluxo de autenticacao existente
+## Fluxo de autenticação existente
 
 1. `POST /auth/register` com `email`, `name`, `password`.
 2. `POST /auth/login` para obter `access_token`.
