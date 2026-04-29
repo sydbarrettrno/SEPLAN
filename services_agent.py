@@ -9,9 +9,9 @@ from schemas import AgentMessageRequest, AgentMessageResponse
 from services_knowledge_base import search_knowledge_base, select_best_pattern
 
 
-PRODUCT_NAME = "Agente WhatsApp SEPLAN"
+PRODUCT_NAME = "SEPLAN IA — Apoio Técnico ao Atendimento"
 SEPLAN_CONTACT = {
-    "whatsapp": "(47) 98841-6225",
+    "whatsapp": "(47) 9 8841-6225",
     "phone": "(47) 3443-8826",
     "email": "atendimento.seplan@itapoa.sc.gov.br",
     "hours": "07h30 às 13h30",
