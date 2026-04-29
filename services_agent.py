@@ -1,79 +1,59 @@
 import json
 import unicodedata
-from typing import Dict, List, Sequence, Tuple
+from typing import List
 
 from sqlmodel import Session
 
-from models import AttendanceMessage, ProtocolRecord
-from schemas import AgentMessageRequest, AgentMessageResponse, AgentSourceProtocol
-from services_protocolos import search_protocols
+from models import AttendanceMessage
+from schemas import AgentMessageRequest, AgentMessageResponse
+from services_knowledge_base import search_knowledge_base, select_best_pattern
 
 
 PRODUCT_NAME = "Agente WhatsApp SEPLAN"
-
-INTENT_KEYWORDS: Dict[str, Sequence[str]] = {
-    "habite_se": ("habite se", "habite-se", "habite", "habitese"),
-    "alvara_construcao": ("alvara construcao", "alvara de construcao", "licenca construcao"),
-    "certidao_uso_ocupacao": (
-        "certidao uso ocupacao",
-        "uso ocupacao",
-        "uso do solo",
-        "zoneamento",
-    ),
-    "declaracao_nao_oposicao": (
-        "declaracao nao oposicao",
-        "nao oposicao",
-        "sem oposicao",
-    ),
-    "guia_rebaixada": ("guia rebaixada", "rebaixamento guia", "baixar guia"),
-    "drenagem": ("drenagem", "agua pluvial", "aguas pluviais", "escoamento"),
-    "denuncia": ("denuncia", "denunciar", "irregular", "obra irregular"),
-}
-
-RESPONSE_TEMPLATES: Dict[str, str] = {
-    "habite_se": (
-        "Para Habite-se, normalmente o atendimento confere dados do imovel, "
-        "alvara de construcao e documentos anexados ao protocolo."
-    ),
-    "alvara_construcao": (
-        "Para alvara de construcao, o atendimento costuma conferir os dados do imovel "
-        "e as informacoes anexadas ao protocolo."
-    ),
-    "certidao_uso_ocupacao": (
-        "Para certidao de uso e ocupacao, o atendimento verifica os dados do imovel "
-        "e o enquadramento informado no protocolo."
-    ),
-    "declaracao_nao_oposicao": (
-        "Para declaracao de nao oposicao, o atendimento confere o pedido e os dados "
-        "apresentados no protocolo."
-    ),
-    "guia_rebaixada": (
-        "Sobre guia rebaixada, o atendimento costuma verificar o local informado "
-        "e os dados registrados no protocolo."
-    ),
-    "drenagem": (
-        "Sobre drenagem, o atendimento verifica a situacao descrita, o local e os "
-        "registros relacionados na base da SEPLAN."
-    ),
-    "denuncia": (
-        "Para denuncia, posso registrar a orientacao inicial, mas a avaliacao precisa "
-        "passar pelo atendimento responsavel."
-    ),
-    "desconhecida": (
-        "Nao consegui identificar com seguranca o tipo de pedido. Posso te encaminhar "
-        "para o atendimento conferir melhor."
-    ),
-}
+CONTACT_INSTRUCTION = "Em caso de dúvida, entre em contato com a SEPLAN."
+FALLBACK_RESPONSE = (
+    "Não encontrei base suficiente para responder com segurança. "
+    "Em caso de dúvida, entre em contato com a SEPLAN."
+)
 
 
 def handle_agent_message(session: Session, payload: AgentMessageRequest) -> AgentMessageResponse:
     normalized_message = normalize_agent_text(payload.message)
-    detected_intent, intent_score = detect_intent(normalized_message)
-    source_records = find_source_protocols(session, payload.message, detected_intent)
-    source_protocols = [to_source_protocol(record) for record in source_records]
-    confidence_score = calculate_confidence(intent_score, source_protocols)
-    needs_human_review = True
-    response_text = build_response_text(detected_intent, source_protocols)
+    ranked_patterns = search_knowledge_base(payload.message, limit=8)
+    best_pattern = select_best_pattern(payload.message)
+
+    if best_pattern:
+        detected_intent = str(best_pattern.get("_intent") or best_pattern.get("intent") or "DESCONHECIDA")
+        supporting_patterns = filter_supporting_patterns(best_pattern, ranked_patterns)
+        response_text = build_response_text(best_pattern)
+        confidence_score = round(
+            float(best_pattern.get("_confidence") or best_pattern.get("_score") or 0.0),
+            2,
+        )
+        source_patterns = merge_source_values(best_pattern, supporting_patterns, "_source_patterns")
+        source_protocols = merge_source_values(best_pattern, supporting_patterns, "_source_protocols", limit=6)
+        source_checklists = merge_source_values(best_pattern, supporting_patterns, "_source_checklists", limit=6)
+        source_normative = merge_source_values(best_pattern, supporting_patterns, "_source_normative", limit=6)
+        if source_protocols:
+            response_text = remove_individual_protocol_language(response_text)
+        answer_source = str(best_pattern.get("_source_type") or "knowledge_base")
+        fallback_contact = False
+        contact_instruction = None
+        knowledge_base_used = True
+        needs_human_review = confidence_score < 0.7
+    else:
+        detected_intent = "DESCONHECIDA"
+        response_text = FALLBACK_RESPONSE
+        confidence_score = 0.2
+        source_patterns = []
+        source_protocols = []
+        source_checklists = []
+        source_normative = []
+        answer_source = "fallback"
+        fallback_contact = True
+        contact_instruction = CONTACT_INSTRUCTION
+        knowledge_base_used = False
+        needs_human_review = True
 
     log = AttendanceMessage(
         channel=payload.channel,
@@ -83,11 +63,13 @@ def handle_agent_message(session: Session, payload: AgentMessageRequest) -> Agen
         detected_intent=detected_intent,
         response_text=response_text,
         confidence_score=confidence_score,
-        source_protocols=json.dumps(
-            [source.model_dump() for source in source_protocols],
-            ensure_ascii=False,
-        ),
+        source_protocols=json.dumps(source_protocols, ensure_ascii=False),
         needs_human_review=needs_human_review,
+        source_checklists=json.dumps(source_checklists, ensure_ascii=False),
+        source_normative=json.dumps(source_normative, ensure_ascii=False),
+        answer_source=answer_source,
+        fallback_contact=fallback_contact,
+        knowledge_base_used=knowledge_base_used,
     )
     session.add(log)
     session.commit()
@@ -98,8 +80,15 @@ def handle_agent_message(session: Session, payload: AgentMessageRequest) -> Agen
         detected_intent=detected_intent,
         response_text=response_text,
         confidence_score=confidence_score,
+        source_patterns=source_patterns,
         source_protocols=source_protocols,
+        source_checklists=source_checklists,
+        source_normative=source_normative,
+        answer_source=answer_source,
         needs_human_review=needs_human_review,
+        fallback_contact=fallback_contact,
+        contact_instruction=contact_instruction,
+        knowledge_base_used=knowledge_base_used,
     )
 
 
@@ -110,70 +99,67 @@ def normalize_agent_text(value: str) -> str:
     return " ".join(text.split())
 
 
-def detect_intent(normalized_message: str) -> Tuple[str, float]:
-    best_intent = "desconhecida"
-    best_score = 0.0
+def build_source_patterns(pattern: dict) -> List[str]:
+    values = pattern.get("_source_patterns")
+    if values:
+        return [str(value) for value in values if value]
 
-    for intent, keywords in INTENT_KEYWORDS.items():
-        score = 0.0
-        for keyword in keywords:
-            normalized_keyword = normalize_agent_text(keyword)
-            if normalized_keyword and normalized_keyword in normalized_message:
-                score += 1.0
-        if score > best_score:
-            best_intent = intent
-            best_score = score
-
-    if best_intent == "desconhecida":
-        return best_intent, 0.0
-
-    return best_intent, min(0.65, 0.35 + (best_score * 0.15))
+    fallback_values = [
+        pattern.get("grupo_pergunta"),
+        pattern.get("pergunta_padrao"),
+        pattern.get("grupo"),
+        pattern.get("item"),
+        pattern.get("pergunta"),
+    ]
+    return [str(value) for value in fallback_values if value]
 
 
-def find_source_protocols(
-    session: Session,
-    message: str,
-    detected_intent: str,
-) -> List[ProtocolRecord]:
-    if detected_intent == "desconhecida":
-        query = message
-    else:
-        keywords = " ".join(INTENT_KEYWORDS.get(detected_intent, ()))
-        query = f"{message} {detected_intent.replace('_', ' ')} {keywords}"
+def filter_supporting_patterns(best_pattern: dict, ranked_patterns: List[dict]) -> List[dict]:
+    best_intent = normalize_agent_text(str(best_pattern.get("_intent") or best_pattern.get("intent") or ""))
+    supporting: List[dict] = []
+    for pattern in ranked_patterns:
+        if pattern is best_pattern:
+            continue
 
-    return search_protocols(session=session, query=query, limit=3)
+        source_type = str(pattern.get("_source_type") or "")
+        pattern_intent = normalize_agent_text(str(pattern.get("_intent") or pattern.get("intent") or ""))
+        if pattern_intent == best_intent or source_type == "normative":
+            supporting.append(pattern)
 
-
-def to_source_protocol(record: ProtocolRecord) -> AgentSourceProtocol:
-    return AgentSourceProtocol(
-        protocolo=record.protocolo,
-        numero_ano=record.numero_ano,
-        situacao=record.situacao,
-        subassunto=record.subassunto,
-    )
+    return supporting
 
 
-def calculate_confidence(intent_score: float, source_protocols: Sequence[AgentSourceProtocol]) -> float:
-    source_bonus = 0.15 if source_protocols else 0.0
-    return round(min(0.95, intent_score + source_bonus), 2)
+def merge_source_values(best_pattern: dict, supporting_patterns: List[dict], key: str, limit: int = 8) -> List[str]:
+    values: List[str] = []
+    for pattern in [best_pattern, *supporting_patterns]:
+        for value in pattern.get(key, []) or []:
+            text = str(value).strip()
+            if text and text not in values:
+                values.append(text)
+            if len(values) >= limit:
+                return values
+
+    return values
 
 
-def build_response_text(
-    detected_intent: str,
-    source_protocols: Sequence[AgentSourceProtocol],
-) -> str:
-    base_text = RESPONSE_TEMPLATES.get(detected_intent, RESPONSE_TEMPLATES["desconhecida"])
+def build_response_text(pattern: dict) -> str:
+    text = str(pattern.get("_response_text") or FALLBACK_RESPONSE).strip()
+    if not text:
+        return FALLBACK_RESPONSE
 
-    if detected_intent == "desconhecida":
-        return base_text
+    return text
 
-    if source_protocols:
-        return (
-            f"{base_text} Encontrei registros semelhantes na base da SEPLAN, "
-            "mas a conferencia final precisa ser feita pelo atendimento."
-        )
 
-    return (
-        f"{base_text} Nao encontrei registros semelhantes agora, entao a conferencia "
-        "precisa ser feita pelo atendimento."
-    )
+def remove_individual_protocol_language(text: str) -> str:
+    replacements = {
+        "documentação do protocolo": "documentação enviada",
+        "documentacao do protocolo": "documentacao enviada",
+        "no protocolo": "no atendimento",
+        "do protocolo": "do atendimento",
+        "protocolo": "atendimento",
+    }
+    clean_text = text
+    for old, new in replacements.items():
+        clean_text = clean_text.replace(old, new)
+        clean_text = clean_text.replace(old.capitalize(), new.capitalize())
+    return clean_text

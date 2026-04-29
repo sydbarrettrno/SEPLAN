@@ -164,15 +164,17 @@ def canonicalize(value: object) -> str:
 
 
 def build_record(data: Mapping[str, object]) -> Optional[ProtocolRecord]:
-    protocolo = clean_text(data.get("protocolo")) or clean_text(data.get("numero_ano"))
+    raw_protocolo = clean_text(data.get("protocolo"))
+    raw_numero_ano = clean_text(data.get("numero_ano"))
+    protocolo = extract_protocol_number(raw_protocolo) or extract_protocol_number(raw_numero_ano)
     if not protocolo:
         return None
 
-    ano = parse_int(data.get("ano")) or infer_year(data.get("numero_ano"))
+    ano = parse_int(data.get("ano")) or infer_year(raw_numero_ano) or infer_year(raw_protocolo)
     normalized_data = {
         "protocolo": protocolo,
         "ano": ano,
-        "numero_ano": clean_text(data.get("numero_ano")),
+        "numero_ano": raw_numero_ano,
         "requerente": clean_text(data.get("requerente")),
         "abertura_data": parse_date(data.get("abertura_data")),
         "obs_abertura": clean_text(data.get("obs_abertura")),
@@ -301,6 +303,20 @@ def parse_datetime(value: object) -> Optional[datetime]:
             continue
 
     return None
+
+
+def extract_protocol_number(value: object) -> Optional[str]:
+    text = clean_text(value)
+    if not text:
+        return None
+
+    parts = [part.strip() for part in text.replace("-", "/").split("/") if part.strip()]
+    if len(parts) >= 2:
+        possible_year = parse_int(parts[-1])
+        if possible_year and 1900 <= possible_year <= 2100:
+            return "/".join(parts[:-1])
+
+    return text
 
 
 def infer_year(value: object) -> Optional[int]:

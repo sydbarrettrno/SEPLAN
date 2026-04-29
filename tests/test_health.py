@@ -7,3 +7,10 @@ def test_health():
     r = client.get("/health")
     assert r.status_code == 200
     assert r.json()["status"] == "ok"
+
+
+def test_frontend_is_served():
+    client = TestClient(app)
+    r = client.get("/app/")
+    assert r.status_code == 200
+    assert "Agente WhatsApp SEPLAN" in r.text

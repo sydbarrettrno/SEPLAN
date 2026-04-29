@@ -4,6 +4,7 @@ from sqlmodel import Session, delete
 from database import engine, init_db
 from main import app
 from models import ProtocolRecord
+from scripts.import_protocolos import build_record
 from services_protocolos import build_texto_busca
 
 
@@ -65,3 +66,19 @@ def test_get_protocol_not_found():
 
     assert response.status_code == 404
     assert response.json()["detail"]["status"] == "not_found"
+
+
+def test_import_build_record_splits_numero_ano_when_protocol_column_is_missing():
+    record = build_record(
+        {
+            "numero_ano": "12345/2024",
+            "requerente": "Maria Silva",
+            "subassunto": "Consulta de viabilidade",
+        }
+    )
+
+    assert record is not None
+    assert record.protocolo == "12345"
+    assert record.ano == 2024
+    assert record.numero_ano == "12345/2024"
+    assert "Maria Silva" in record.texto_busca

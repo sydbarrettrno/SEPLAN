@@ -1,0 +1,50 @@
+{
+  "arquivo_origem": "BASE 2000-2025(2).xlsx",
+  "aba_processada": "BASE LIMPA",
+  "linhas_processadas": 2680,
+  "colunas_processadas": [
+    "Número/Ano.1",
+    "Número/Ano.2",
+    "Requerente - Nome Razão",
+    "Último Trâmite - Data/Hora.1",
+    "Observação Abertura",
+    "Situação",
+    "Abertura - Data",
+    "Assunto - Descrição",
+    "Subassunto - Descrição",
+    "Responsável",
+    "Último Trâmite - Observação",
+    "Prazo Atual",
+    "Data Encerramento",
+    "Última Atividade",
+    "Centro de Custo Atual - Descrição",
+    "Centro de Custo Abertura - Descrição",
+    "Usuário Atual - Nome"
+  ],
+  "intencoes_geradas": 10,
+  "frequencia_por_intencao": {
+    "ALVARA_CONSTRUCAO": 972,
+    "HABITE_SE": 498,
+    "ALVARA_ATENDIMENTO": 471,
+    "DESDOBRO": 412,
+    "DESDOBRO_UNIFICACAO_ATENDIMENTO": 211,
+    "ALVARA_DEMOLICAO": 94,
+    "UNIFICACAO": 11,
+    "ALVARA_AMPLIACAO": 5,
+    "ALVARA_REGULARIZACAO": 4,
+    "ALVARA_MODIFICATIVO": 2
+  },
+  "subassuntos": {
+    "ALVARÁ DE CONSTRUÇÃO": 973,
+    "HABITE-SE": 494,
+    "ALVARA ATENDIMENTO": 471,
+    "DESDOBRO": 412,
+    "DESDOBRO/UNIFICAÇÃO ATENDIMENTO": 213,
+    "ALVARÁ DE DEMOLIÇÃO DE CONSTRUÇÃO": 94,
+    "UNIFICAÇÃO": 12,
+    "ALVARÁ DE AMPLIAÇÃO": 5,
+    "ALVARÁ DE REGULARIZAÇÃO": 4,
+    "ALVARÁ MODIFICATIVO": 2
+  },
+  "observacao": "Base gerada com lógica histórica recuperada: ObsAbertura como pergunta/pedido real, UltTramiteOBS como resposta prática, protocolos como rastreabilidade."
+}

@@ -63,5 +63,10 @@ class AttendanceMessage(SQLModel, table=True):
     confidence_score: Optional[float] = None
     source_protocols: Optional[str] = None
     needs_human_review: bool = Field(default=True, index=True)
+    source_checklists: Optional[str] = None
+    source_normative: Optional[str] = None
+    answer_source: Optional[str] = Field(default=None, index=True)
+    fallback_contact: bool = Field(default=True, index=True)
+    knowledge_base_used: bool = Field(default=False, index=True)
 
     created_at: datetime = Field(default_factory=datetime.utcnow)

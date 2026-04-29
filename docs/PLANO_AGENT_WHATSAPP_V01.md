@@ -12,6 +12,13 @@ Agente WhatsApp SEPLAN: backend FastAPI que simula a entrada de mensagens de Wha
 - `AttendanceMessage` registra entrada, intencao, resposta, confianca, fontes usadas e necessidade de revisao humana.
 - `/protocolos/search` continua disponivel como ferramenta interna de consulta e validacao da base.
 
+## Motor local de protocolos
+
+- `ProtocolRecord` guarda os registros normalizados no banco.
+- `scripts/import_protocolos.py` importa CSV ou XLSX sem exigir todos os campos.
+- `services_protocolos.py` monta `texto_busca` e executa busca textual simples por protocolo, requerente, assunto, situacao, responsavel e observacoes.
+- `/protocolos/health`, `/protocolos/search` e `/protocolos/{protocolo}` retornam JSON claro para teste e auditoria.
+
 ## Escopo desta versao
 
 - Simular atendimento WhatsApp via API.
@@ -34,3 +41,10 @@ Agente WhatsApp SEPLAN: backend FastAPI que simula a entrada de mensagens de Wha
 2. Ampliar sinonimos e exemplos reais por intencao.
 3. Adicionar filtros de protocolo por ano, situacao e responsavel.
 4. Integrar WhatsApp real somente depois que a simulacao estiver auditavel.
+
+## V02 - Bases inteligentes e interface local
+
+- `/agent/message` consulta respostas corrigidas, perguntas e respostas curadas, checklists operacionais, historico de protocolos e base normativa.
+- `source_protocols` e usado apenas como rastreabilidade; a resposta principal vem de QA, checklist, historico, resposta corrigida ou fallback.
+- `/agent/knowledge` mostra quantos itens foram carregados de cada base.
+- `/app/` entrega uma interface web local para conversar com o agente e inspecionar fontes.

@@ -65,18 +65,18 @@ class AgentMessageRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000)
 
 
-class AgentSourceProtocol(BaseModel):
-    protocolo: str
-    numero_ano: Optional[str] = None
-    situacao: Optional[str] = None
-    subassunto: Optional[str] = None
-
-
 class AgentMessageResponse(BaseModel):
     channel: str
     phone_number: Optional[str] = None
     detected_intent: str
     response_text: str
     confidence_score: float
-    source_protocols: List[AgentSourceProtocol]
+    source_patterns: List[str]
+    source_protocols: List[str]
+    source_checklists: List[str]
+    source_normative: List[str]
+    answer_source: str
     needs_human_review: bool
+    fallback_contact: bool
+    contact_instruction: Optional[str] = None
+    knowledge_base_used: bool
