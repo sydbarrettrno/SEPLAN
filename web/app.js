@@ -8,21 +8,32 @@ const fields = {
   apiStatus: document.querySelector("#api-status"),
   kbStatus: document.querySelector("#kb-status"),
   intent: document.querySelector("#intent-value"),
+  answerType: document.querySelector("#answer-type-value"),
   source: document.querySelector("#source-value"),
   confidence: document.querySelector("#confidence-value"),
   review: document.querySelector("#review-value"),
+  contact: document.querySelector("#contact-value"),
   checklists: document.querySelector("#checklist-sources"),
   normative: document.querySelector("#normative-sources"),
   protocols: document.querySelector("#protocol-sources"),
 };
 
 const sourceLabels = {
-  qa: "Perguntas e respostas",
-  corrected: "Resposta corrigida",
-  checklist: "Checklist operacional",
-  historical: "Base histórica",
+  qa: "Perguntas e respostas curadas",
+  corrected: "Resposta corrigida pela SEPLAN",
+  checklist: "Checklist técnico-operacional",
+  historical: "Histórico e últimos trâmites",
   normative: "Base normativa",
-  fallback: "Contato SEPLAN",
+  fallback: "Encaminhamento SEPLAN",
+};
+
+const answerTypeLabels = {
+  qa: "Orientação administrativa",
+  corrected: "Orientação corrigida",
+  checklist: "Conferência documental",
+  historical: "Triagem por padrão histórico",
+  normative: "Orientação normativa",
+  fallback: "Encaminhamento seguro",
 };
 
 function removeEmptyState() {
@@ -36,7 +47,7 @@ function addMessage(role, text) {
   removeEmptyState();
   const node = document.createElement("article");
   node.className = `message ${role}`;
-  const label = role === "user" ? "Cidadão" : "Agente";
+  const label = role === "user" ? "Cidadão" : "SEPLAN IA";
   node.innerHTML = `<small>${label}</small>${escapeHtml(text)}`;
   conversation.appendChild(node);
   conversation.scrollTop = conversation.scrollHeight;
@@ -69,12 +80,15 @@ function setList(element, values) {
 
 function updateInspector(data) {
   fields.intent.textContent = data.detected_intent || "-";
+  fields.answerType.textContent = answerTypeLabels[data.answer_source] || "Triagem técnica";
   fields.source.textContent = sourceLabels[data.answer_source] || data.answer_source || "-";
   fields.confidence.textContent = typeof data.confidence_score === "number"
     ? `${Math.round(data.confidence_score * 100)}%`
     : "-";
   fields.review.textContent = data.needs_human_review ? "sim" : "não";
   fields.review.className = data.needs_human_review ? "warn" : "good";
+  fields.contact.textContent = data.fallback_contact || data.contact_instruction ? "sim" : "não";
+  fields.contact.className = data.fallback_contact || data.contact_instruction ? "warn" : "good";
   setList(fields.checklists, data.source_checklists);
   setList(fields.normative, data.source_normative);
   setList(fields.protocols, data.source_protocols);
@@ -82,7 +96,7 @@ function updateInspector(data) {
 
 async function sendMessage(message) {
   sendButton.disabled = true;
-  sendButton.textContent = "Enviando";
+  sendButton.textContent = "Analisando";
   addMessage("user", message);
 
   try {
@@ -109,7 +123,7 @@ async function sendMessage(message) {
     fields.apiStatus.className = "bad";
   } finally {
     sendButton.disabled = false;
-    sendButton.textContent = "Enviar";
+    sendButton.textContent = "Analisar";
   }
 }
 
@@ -161,8 +175,8 @@ document.querySelectorAll(".prompt-button").forEach((button) => {
 clearButton.addEventListener("click", () => {
   conversation.innerHTML = `
     <div class="empty-state">
-      <strong>Digite uma pergunta da SEPLAN.</strong>
-      <span>O agente responde usando base normativa, checklists, histórico e respostas corrigidas.</span>
+      <strong>Digite uma dúvida de atendimento da SEPLAN.</strong>
+      <span>O sistema faz triagem técnica com base normativa, checklists, histórico e respostas corrigidas.</span>
     </div>
   `;
   updateInspector({
@@ -170,6 +184,8 @@ clearButton.addEventListener("click", () => {
     answer_source: "-",
     confidence_score: null,
     needs_human_review: false,
+    fallback_contact: false,
+    contact_instruction: null,
     source_checklists: [],
     source_normative: [],
     source_protocols: [],
