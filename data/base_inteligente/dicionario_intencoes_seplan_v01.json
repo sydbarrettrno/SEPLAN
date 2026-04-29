@@ -1,0 +1,518 @@
+{
+  "HABITE_SE": {
+    "intent": "HABITE_SE",
+    "nome_amigavel": "Habite-se",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 498,
+    "temperatura_semantica": "baixa",
+    "variacoes_usuario": [
+      "quero pedir habite-se",
+      "como faço o habite-se",
+      "preciso de vistoria para habite-se",
+      "obra pronta para habite-se"
+    ],
+    "termos_associados": [
+      "HABITE",
+      "CONSTRUCAO",
+      "ALVARA",
+      "COMPROVACAO",
+      "PAGAMENTO",
+      "RETIRAR",
+      "OBS",
+      "EMITIDA",
+      "APOS",
+      "CERTIDAO",
+      "ART",
+      "ENCAMINHADO",
+      "ASSINATURAS",
+      "TAXAS",
+      "PROJETO",
+      "PROTOCOLO",
+      "NAO",
+      "RETIRADA",
+      "OBRIGATORIA",
+      "CORRETA"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "ALVARA_CONSTRUCAO": {
+    "intent": "ALVARA_CONSTRUCAO",
+    "nome_amigavel": "Alvará de construção",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 972,
+    "temperatura_semantica": "baixa",
+    "variacoes_usuario": [
+      "quero pedir alvará de construção",
+      "quais documentos para alvará",
+      "meu projeto está em análise",
+      "preciso aprovar construção"
+    ],
+    "termos_associados": [
+      "CONSTRUCAO",
+      "ALVARA",
+      "ESTE",
+      "RESIDENCIAL",
+      "ALVENARIA",
+      "COMERCIAL",
+      "TAXAS",
+      "MISTA",
+      "PAGAMENTO",
+      "MADEIRA",
+      "OBS",
+      "DOCUMENTACAO",
+      "COMPROVACAO",
+      "RETIRADA",
+      "APOS",
+      "RESPONSAVEL",
+      "AGUARDANDO",
+      "PORTAL",
+      "PLANILHA",
+      "ANALISE"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "ALVARA_ATENDIMENTO": {
+    "intent": "ALVARA_ATENDIMENTO",
+    "nome_amigavel": "Alvará em atendimento/análise",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 471,
+    "temperatura_semantica": "baixa",
+    "variacoes_usuario": [
+      "recebi exigências no alvará",
+      "o processo voltou com análise",
+      "como atender comentários do projeto",
+      "arquivo de análise anexo"
+    ],
+    "termos_associados": [
+      "ALVARA",
+      "CONSTRUCAO",
+      "ATENDIMENTO",
+      "ALVENARIA",
+      "LOCALIZADO",
+      "TAXAS",
+      "PAGAMENTO",
+      "UNIFAMILIAR",
+      "RESIDENCIA",
+      "COMPROVACAO",
+      "OBS",
+      "RETIRADA",
+      "DOCUMENTACAO",
+      "APOS",
+      "RESIDENCIAL",
+      "AMPLIACAO",
+      "RESPONSAVEL",
+      "AGUARDANDO",
+      "REGULARIZACAO",
+      "PORTAL"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "CERTIDAO_USO_OCUPACAO_SOLO": {
+    "intent": "CERTIDAO_USO_OCUPACAO_SOLO",
+    "nome_amigavel": "Certidao Uso Ocupacao Solo",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DECLARACAO_NAO_OPOSICAO_AGUA": {
+    "intent": "DECLARACAO_NAO_OPOSICAO_AGUA",
+    "nome_amigavel": "Declaracao Nao Oposicao Agua",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DECLARACAO_NAO_OPOSICAO_LUZ": {
+    "intent": "DECLARACAO_NAO_OPOSICAO_LUZ",
+    "nome_amigavel": "Declaracao Nao Oposicao Luz",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "GUIA_REBAIXADA": {
+    "intent": "GUIA_REBAIXADA",
+    "nome_amigavel": "Guia Rebaixada",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DRENAGEM": {
+    "intent": "DRENAGEM",
+    "nome_amigavel": "Drenagem",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DENUNCIA_OBRA_IRREGULAR": {
+    "intent": "DENUNCIA_OBRA_IRREGULAR",
+    "nome_amigavel": "Denuncia Obra Irregular",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DOCUMENTACAO_EXIGENCIAS": {
+    "intent": "DOCUMENTACAO_EXIGENCIAS",
+    "nome_amigavel": "Documentacao Exigencias",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "TAXAS": {
+    "intent": "TAXAS",
+    "nome_amigavel": "Taxas",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "PRAZO_ANDAMENTO": {
+    "intent": "PRAZO_ANDAMENTO",
+    "nome_amigavel": "Prazo Andamento",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "PEDIDO_DESARQUIVAMENTO": {
+    "intent": "PEDIDO_DESARQUIVAMENTO",
+    "nome_amigavel": "Pedido Desarquivamento",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DESDOBRO": {
+    "intent": "DESDOBRO",
+    "nome_amigavel": "Desdobro",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 412,
+    "temperatura_semantica": "baixa",
+    "variacoes_usuario": [
+      "quero fazer desdobro",
+      "dividir lote",
+      "aprovar desdobro",
+      "desmembrar terreno"
+    ],
+    "termos_associados": [
+      "DESDOBRO",
+      "UNIFICACAO",
+      "00M2",
+      "MAE",
+      "PROTOCOLO",
+      "LTDA",
+      "FOI",
+      "IMOBILIARIO",
+      "DESDOBRADO",
+      "SAI",
+      "INDEFERIDO",
+      "ART",
+      "OBS",
+      "MIRIM",
+      "LOTES",
+      "RETIFICAR",
+      "IPTU",
+      "MEMORIAL",
+      "CUMPRIR",
+      "CODIGO"
+    ],
+    "normas_relacionadas": [
+      "PDM_LCM_48_2016",
+      "LEI_USO_OCUPACAO_676_2016"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DESDOBRO_UNIFICACAO_ATENDIMENTO": {
+    "intent": "DESDOBRO_UNIFICACAO_ATENDIMENTO",
+    "nome_amigavel": "Desdobro/unificação em atendimento",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 211,
+    "temperatura_semantica": "baixa",
+    "variacoes_usuario": [
+      "meu desdobro voltou",
+      "unificação em análise",
+      "exigência no desdobro",
+      "desdobro e unificação atendimento"
+    ],
+    "termos_associados": [
+      "DESDOBRO",
+      "UNIFICACAO",
+      "ATENDIMENTO",
+      "ALVARA",
+      "CONSTRUCAO",
+      "PROTOCOLO",
+      "00M2",
+      "MAE",
+      "EDIFICACAO",
+      "RETIFICAR",
+      "FOI",
+      "APRESENTAR",
+      "APOS",
+      "DESDOBRADO",
+      "IMOBILIARIO",
+      "PAGAMENTO",
+      "TAXAS",
+      "DOCUMENTACAO",
+      "PLANTA",
+      "RESIDENCIAL"
+    ],
+    "normas_relacionadas": [
+      "PDM_LCM_48_2016",
+      "LEI_USO_OCUPACAO_676_2016"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "UNIFICACAO": {
+    "intent": "UNIFICACAO",
+    "nome_amigavel": "Unificação/remembramento",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 11,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [
+      "quero unificar lotes",
+      "remembramento",
+      "juntar terrenos",
+      "alvará de unificação"
+    ],
+    "termos_associados": [
+      "UNIFICACAO",
+      "RETIFICACAO",
+      "IPTU",
+      "REVISAO",
+      "NAO",
+      "MEMORIAL",
+      "RETIFICAR",
+      "PRINCESA",
+      "MAR",
+      "PAGAMENTO",
+      "PEROLA",
+      "ANO",
+      "ITAPEMA",
+      "SAI",
+      "NOMENCLATURA",
+      "UNIFICADO",
+      "ALVORADA",
+      "DALMIR",
+      "LUIZ",
+      "AUGUSTO"
+    ],
+    "normas_relacionadas": [
+      "PDM_LCM_48_2016",
+      "LEI_USO_OCUPACAO_676_2016"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "ALVARA_DEMOLICAO": {
+    "intent": "ALVARA_DEMOLICAO",
+    "nome_amigavel": "Alvará de demolição",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 94,
+    "temperatura_semantica": "baixa",
+    "variacoes_usuario": [
+      "quero demolir",
+      "alvará de demolição",
+      "documentos para demolição",
+      "vistoria de demolição"
+    ],
+    "termos_associados": [
+      "DEMOLICAO",
+      "ALVARA",
+      "CONSTRUCAO",
+      "PRIOPRIETARIO",
+      "CERTIDAO",
+      "APOS",
+      "RETIRADA",
+      "RESPONSAVEL",
+      "TAXAS",
+      "COMPROVACAO",
+      "OBS",
+      "PAGAMENTO",
+      "ENCAMINHADO",
+      "AGUARDANDO",
+      "PROTOCOLO",
+      "DOCUMENTACAO",
+      "ASSINATURAS",
+      "SER",
+      "EMISSAO",
+      "VISTORIA"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "ALVARA_AMPLIACAO": {
+    "intent": "ALVARA_AMPLIACAO",
+    "nome_amigavel": "Alvará de ampliação",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 5,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [
+      "ampliar construção",
+      "alvará de ampliação",
+      "documentos para ampliação"
+    ],
+    "termos_associados": [
+      "AMPLIACAO",
+      "ALVARA",
+      "CONSTRUCAO",
+      "RESIDENCIAL",
+      "ALVENARIA",
+      "ESTE",
+      "MODIFICATIVO",
+      "EXISTENTE",
+      "SOUZA",
+      "48M2",
+      "ITAMAR",
+      "HENRIQUETA",
+      "FERREIRA",
+      "GRUBBA",
+      "70M2",
+      "ALVENARIACONFORME",
+      "JARDIM",
+      "PEROLA",
+      "ATLANTICO",
+      "PAULO"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "ALVARA_REGULARIZACAO": {
+    "intent": "ALVARA_REGULARIZACAO",
+    "nome_amigavel": "Alvará de regularização",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 4,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [
+      "regularizar obra",
+      "alvará de regularização",
+      "obra existente"
+    ],
+    "termos_associados": [
+      "ALVARA",
+      "REGULARIZACAO",
+      "CONSTRUCAO",
+      "MISTA",
+      "ESTE",
+      "RESIDENCIAL",
+      "COMERCIAL",
+      "ALVENARIA",
+      "MADEIRA",
+      "ITAPEMA",
+      "GLEBA",
+      "LIZANDRA",
+      "SOUZA",
+      "VENANCIO",
+      "34M2",
+      "SAI",
+      "MIRIM",
+      "GEOVANE",
+      "RIBEIRO",
+      "CUNHA"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "ALVARA_MODIFICATIVO": {
+    "intent": "ALVARA_MODIFICATIVO",
+    "nome_amigavel": "Alvará modificativo",
+    "status_base_atual": "COM_DADOS",
+    "frequencia_base_atual": 2,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [
+      "alterar projeto aprovado",
+      "alvará modificativo",
+      "mudança no projeto"
+    ],
+    "termos_associados": [
+      "ALVARA",
+      "MODIFICATIVO",
+      "ALVENARIA",
+      "ESTE",
+      "RESIDENCIAL",
+      "CAMBIJU",
+      "LUIZ",
+      "DIOGO",
+      "MUSSOI",
+      "COMERCIAL",
+      "PEROLA",
+      "ADAURY",
+      "FRANCISCO",
+      "CHERUBINI"
+    ],
+    "normas_relacionadas": [
+      "LCM_49_2016_CODIGO_OBRAS"
+    ],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "OUTROS": {
+    "intent": "OUTROS",
+    "nome_amigavel": "Outros",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  },
+  "DESCONHECIDA": {
+    "intent": "DESCONHECIDA",
+    "nome_amigavel": "Desconhecida",
+    "status_base_atual": "SEM_DADOS_NA_BASE_ATUAL",
+    "frequencia_base_atual": 0,
+    "temperatura_semantica": "baixa_com_revisao",
+    "variacoes_usuario": [],
+    "termos_associados": [],
+    "normas_relacionadas": [],
+    "fallback": "Em caso de dúvida, entre em contato com a SEPLAN."
+  }
+}
