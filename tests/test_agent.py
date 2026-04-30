@@ -7,7 +7,7 @@ from models import AttendanceMessage
 
 
 EXPECTED_CONTACT_PARTS = [
-    "WhatsApp: (47) 98841-6225",
+    "WhatsApp: (47) 9 8841-6225",
     "Telefone: (47) 3443-8826",
     "E-mail: atendimento.seplan@itapoa.sc.gov.br",
     "Atendimento: 07h30 às 13h30",
@@ -34,8 +34,8 @@ def test_agent_health():
     assert response.json() == {
         "status": "ok",
         "module": "agent",
-        "product": "Agente WhatsApp SEPLAN",
-        "version": "v02",
+        "product": "SEPLAN IA — Apoio Técnico ao Atendimento",
+        "version": "v03",
     }
 
 
