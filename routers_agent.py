@@ -31,7 +31,7 @@ def knowledge_health():
     return {
         "status": "ok",
         "module": "knowledge_base",
-        "version": "v02",
+        "version": "v03",
         "sources": {name: len(items) for name, items in bases.items()},
         "priority": ["corrected", "qa", "checklist", "historical", "normative", "fallback"],
     }
