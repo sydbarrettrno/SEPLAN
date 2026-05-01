@@ -10,7 +10,7 @@ A V03 melhora a qualidade da resposta do agente. Quando a base não sustenta uma
 
 Contatos usados pelo agente:
 
-- WhatsApp: (47) 98841-6225
+- WhatsApp: (47) 9 8841-6225
 - Telefone: (47) 3443-8826
 - E-mail: atendimento.seplan@itapoa.sc.gov.br
 - Atendimento: 07h30 às 13h30
@@ -71,8 +71,8 @@ Resposta:
 {
   "status": "ok",
   "module": "agent",
-  "product": "Agente WhatsApp SEPLAN",
-  "version": "v02"
+  "product": "SEPLAN IA — Apoio Técnico ao Atendimento",
+  "version": "v03"
 }
 ```
 
@@ -115,7 +115,7 @@ Fallback profissional quando não houver base suficiente:
 ```json
 {
   "detected_intent": "DESCONHECIDA",
-  "response_text": "Não encontrei base suficiente para responder com segurança.\n\nPara evitar orientação errada, confirme com a SEPLAN:\nWhatsApp: (47) 98841-6225\nTelefone: (47) 3443-8826\nE-mail: atendimento.seplan@itapoa.sc.gov.br\nAtendimento: 07h30 às 13h30.\n\nSe possível, envie também: descrição do pedido, endereço, balneário, quadra, lote e fotos quando houver.",
+  "response_text": "Não encontrei base suficiente para responder com segurança.\n\nPara evitar orientação errada, confirme com a SEPLAN:\nWhatsApp: (47) 9 8841-6225\nTelefone: (47) 3443-8826\nE-mail: atendimento.seplan@itapoa.sc.gov.br\nAtendimento: 07h30 às 13h30.\n\nSe possível, envie também: descrição do pedido, endereço, balneário, quadra, lote e fotos quando houver.",
   "confidence_score": 0.2,
   "source_patterns": [],
   "source_protocols": [],
@@ -124,7 +124,7 @@ Fallback profissional quando não houver base suficiente:
   "answer_source": "fallback",
   "needs_human_review": true,
   "fallback_contact": true,
-  "contact_instruction": "Fale com a SEPLAN:\nWhatsApp: (47) 98841-6225\nTelefone: (47) 3443-8826\nE-mail: atendimento.seplan@itapoa.sc.gov.br\nAtendimento: 07h30 às 13h30.",
+  "contact_instruction": "Fale com a SEPLAN:\nWhatsApp: (47) 9 8841-6225\nTelefone: (47) 3443-8826\nE-mail: atendimento.seplan@itapoa.sc.gov.br\nAtendimento: 07h30 às 13h30.",
   "knowledge_base_used": false
 }
 ```
